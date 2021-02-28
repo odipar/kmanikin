@@ -2,7 +2,7 @@ package net.kmanikin.world
 
 import net.kmanikin.core.*
 
-class SimpleWorld: World<SimpleWorld> {
+class SimpleWorld: DefaultWorld(), World<SimpleWorld> {
   val state = mutableMapOf<Any, Any>()
   private var oldState: Pair<*, *>? = null
 
@@ -17,18 +17,19 @@ class SimpleWorld: World<SimpleWorld> {
   }
 
   override fun <I : Id<O>, O, R> send(id: I, msg: Message<SimpleWorld, I, O, R>): Val<SimpleWorld, R> {
-    val self = Val(this, id)
+    val env = E<SimpleWorld, I, O, R>(id, this)
     val old = Pair(id, obj(id).value)
+    val msg2 = msg.msg()(env)
 
-    return if (!msg.preCondition()(self).value) throw RuntimeException("Pre-condition failed") else {
+    return if (!msg2.pre()()) throw RuntimeException("Pre-condition failed") else {
       try {
-        state[id] = msg.apply()(self).value!!
+        state[id] = msg2.app()()!!
 
         oldState = old
-        val eff = msg.effect()(self)
+        val eff = msg2.eff()()
         oldState = old
 
-        if (!msg.postCondition()(self).value) throw RuntimeException("Post-condition failed") else eff
+        if (!msg2.pst()()) throw RuntimeException("Post-condition failed") else Val(env.world(), eff)
       } finally { oldState = null }
     }
   }

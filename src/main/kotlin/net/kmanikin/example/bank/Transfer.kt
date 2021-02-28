@@ -1,7 +1,6 @@
 package net.kmanikin.example.bank
 
-import net.kmanikin.core.Id
-import net.kmanikin.core.World
+import net.kmanikin.core.*
 import net.kmanikin.message.LocalMessage
 
 object Transfer {
@@ -10,12 +9,13 @@ object Transfer {
   }
 
   data class Data(val from: Account.ID? = null, val to: Account.ID? = null, val amount: Double = 0.0)
-  abstract class Msg<W: World<W>>: LocalMessage.LMsg<W, ID, Data, Unit>()
+  abstract class Msg<W: World<W>>: LocalMessage<W, ID, Data, Unit>()
 
   data class Book<W: World<W>>(val from: Account.ID, val to: Account.ID, val amount: Double): Msg<W>() {
-    override fun pre() = amount > 0 && from != to
-    override fun app() = Data(from, to, amount)
-    override fun eff() { send(from, Account.Withdraw(amount)); send(to, Account.Deposit(amount)) }
-    override fun pst() = obj(from).balance + obj(to).balance == old(from).balance + old(to).balance
+    override fun local() = e().
+      pre { amount > 0 && from != to }.
+      app { Data(from, to, amount) }.
+      eff { send(from, Account.Withdraw(amount)); send(to, Account.Deposit(amount)) }.
+      pst { obj(from).balance + obj(to).balance == old(from).balance + old(to).balance }
   }
 }
