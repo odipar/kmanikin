@@ -9,9 +9,14 @@ version = "1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
+    flatDir {
+        dirs("lib")
+    }
 }
 
 dependencies {
+    implementation(fileTree("lib"))
+    compileOnly(fileTree("lib"))
     testImplementation(kotlin("test-junit"))
 }
 
