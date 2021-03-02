@@ -1,3 +1,1 @@
-
-rootProject.name = "kmanikin"
-
+rootProject.name = "jmanikin-kotlin"

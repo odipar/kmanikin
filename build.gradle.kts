@@ -4,20 +4,17 @@ plugins {
     kotlin("jvm") version "1.4.30"
 }
 
-group = "me.rapido"
-version = "1.0-SNAPSHOT"
+group = "org.jmanikin"
+version = "0.2-SNAPSHOT"
 
 repositories {
     mavenCentral()
-    flatDir {
-        dirs("lib")
-    }
+    mavenLocal()
 }
 
+
 dependencies {
-    implementation(fileTree("lib"))
-    compileOnly(fileTree("lib"))
-    testImplementation(kotlin("test-junit"))
+    implementation("org.jmanikin:jmanikin-core:0.2")
 }
 
 tasks.test {
