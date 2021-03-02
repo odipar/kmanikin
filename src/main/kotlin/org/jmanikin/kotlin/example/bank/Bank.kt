@@ -1,4 +1,4 @@
-package net.manikin.kotlin.example.bank
+package org.jmanikin.kotlin.example.bank
 
 import org.jmanikin.core.*
 import org.jmanikin.message.LocalMessage

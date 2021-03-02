@@ -1,4 +1,4 @@
-package net.manikin.kotlin.message
+package org.jmanikin.kotlin.message
 
 import org.jmanikin.core.*
 import org.jmanikin.message.LocalMessage
