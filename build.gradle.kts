@@ -9,12 +9,11 @@ version = "0.2-SNAPSHOT"
 
 repositories {
     mavenCentral()
-    mavenLocal()
 }
 
 
 dependencies {
-    implementation("org.jmanikin:jmanikin-core:0.2")
+    implementation("org.jmanikin:jmanikin-core:0.2.1")
 }
 
 tasks.test {
