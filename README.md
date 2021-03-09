@@ -5,18 +5,12 @@ See also the Scala [version](https://github.com/odipar/smanikin).
 
 ### Bank example
 ```kotlin
-package net.manikin.kotlin.example.bank
-
-import org.jmanikin.core.*
-import org.jmanikin.message.LocalMessage
-import org.jmanikin.world.SimpleWorld
-
 object Bank {
   data class AccountId(val id: String): Id<Account> { override fun init() = Account() }
   data class Account(val balance: Double = 0.0)
-  interface AccountMsg<W: World<W>>: LocalMessage<W, AccountId, Account, Unit>
+  interface AccountMsg: LocalMessage<AccountId, Account, Unit>
 
-  data class Open<W: World<W>>(val initial: Double): AccountMsg<W> {
+  data class Open(val initial: Double): AccountMsg {
     override fun local() =
       pre { initial > 0.0 }.
       app { Account(initial) }.
@@ -24,7 +18,7 @@ object Bank {
       pst { obj().balance == initial }!!
   }
 
-  data class Deposit<W: World<W>>(val amount: Double): AccountMsg<W> {
+  data class Deposit(val amount: Double): AccountMsg {
     override fun local() =
       pre { amount > 0.0 }.
       app { obj().copy(balance = obj().balance + amount) }.
@@ -32,7 +26,7 @@ object Bank {
       pst { obj().balance == old().balance + amount }!!
   }
 
-  data class Withdraw<W: World<W>>(val amount: Double): AccountMsg<W> {
+  data class Withdraw(val amount: Double): AccountMsg {
     override fun local() =
       pre { amount > 0.0 }.
       app { obj().copy(balance = obj().balance - amount) }.
@@ -40,14 +34,14 @@ object Bank {
       pst { obj().balance == old().balance - amount }!!
   }
 
-  data class TransferId(val id: Long): Id<Data> { override fun init() = Data() }
-  data class Data(val from: AccountId? = null, val to: AccountId? = null, val amount: Double = 0.0)
-  interface Msg<W: World<W>>: LocalMessage<W, TransferId, Data, Unit>
+  data class TransferId(val id: Long): Id<Transfer> { override fun init() = Transfer() }
+  data class Transfer(val from: AccountId? = null, val to: AccountId? = null, val amount: Double = 0.0)
+  interface Msg: LocalMessage<TransferId, Transfer, Unit>
 
-  data class Book<W: World<W>>(val from: AccountId, val to: AccountId, val amount: Double): Msg<W> {
+  data class Book(val from: AccountId, val to: AccountId, val amount: Double): Msg {
     override fun local() =
       pre { amount > 0 && from != to }.
-      app { Data(from, to, amount) }.
+      app { Transfer(from, to, amount) }.
       eff { send(from, Withdraw(amount)); send(to, Deposit(amount)) }.
       pst { obj(from).balance + obj(to).balance == old(from).balance + old(to).balance }!!
   }
@@ -65,8 +59,8 @@ fun main() {
   send(a2, Bank.Open(80.0)).
   send(t1, Bank.Book(a1, a2, 30.0))
 
-  println(result.world.obj(a1).value);
-  println(result.world.obj(a2).value);
+  println(result.obj(a1).value().balance) // 20.0
+  println(result.obj(a2).value().balance) // 110.
 }
 ```
 

@@ -5,15 +5,16 @@ plugins {
 }
 
 group = "org.jmanikin"
-version = "0.2-SNAPSHOT"
+version = "0.3-SNAPSHOT"
 
 repositories {
+    mavenLocal()
     mavenCentral()
 }
 
 
 dependencies {
-    implementation("org.jmanikin:jmanikin-core:0.2.1")
+    implementation("org.jmanikin:jmanikin-core:0.3")
 }
 
 tasks.test {
